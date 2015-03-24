@@ -13,13 +13,26 @@
 # and
 #   about_triangle_project_2.rb
 #
+
+
 def triangle(a, b, c)
   sides = [a, b, c]
   lengths = Hash.new
 
   for side in sides
-    lengths[side] << lengths[side] + 1
+  	
+  	if lengths[side] == nil
+  		lengths[side] = 1
+  	else
+    	lengths[side] = lengths[side] + 1
+    end
   end
+
+
+
+  return :equilateral if lengths.length == 1
+  return :isosceles if lengths.length == 2
+  return :scalene if lengths.length == 3
 
 end
 
