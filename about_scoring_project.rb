@@ -33,29 +33,59 @@ require 'byebug'
 def score(dice)
   return 0 if dice.size == 0
   total_score = 0
-  ones = []
-  fives = []
-  other = []
+
+  dice_values = Hash.new(0)
+
+
+  # Makes a hash that contains the number of occurrences of each number.
+  # E.g. a roll of 1, 1, 2, 3 would result in:
+  # { 1=>2, 2=>1, 3=>1 }
 
   dice.each do |d|
-    if d == 1
-      ones << d
-    elsif d == 5
-      fives << d
+    dice_values[d] = dice_values[d] + 1  
+  end
+
+  # Total the scores:
+  dice_values.keys.each do |k|
+    # Note: this could obviously be refactored, lots of repetition in here.
+
+    case k
+    when 1
+      # * A set of three ones is 1000 points
+      # * A one (that is not part of a set of three) is worth 100 points.
+      if dice_values[1] >= 3
+        total_score += 1000
+        total_score += ( dice_values[1] - 3 ) * 100
+      else
+        total_score += dice_values[1] * 100
+      end
+
+    when 5
+      # * A set of three numbers (other than ones) is worth 100 times the
+      #   number. (e.g. three fives is 500 points).
+
+      # * A five (that is not part of a set of three) is worth 50 points.
+      if dice_values[5] >= 3
+        total_score += 5 * 100
+        total_score += ( dice_values[5] - 3 ) * 50
+      else
+        total_score += dice_values[5] * 50
+      end      
+
     else
-      other << d
+      # * A set of three numbers (other than ones) is worth 100 times the
+      #   number. (e.g. three fives is 500 points).
+      if dice_values[k] >= 3
+        total_score += k * 100      
+      end
     end
-      
   end
 
-  if ones.length >= 3
-    # A set of three ones is 1000 points
-    total_score += 1000
-    ones.shift(3)
 
-    # A one (that is not part of a set of three) is worth 100 points.
-    ones.each { |i| total_score += 100 }
-  end
+
+
+  # * A set of three numbers (other than ones) is worth 100 times the
+  #   number. (e.g. three fives is 500 points).
 
 
 
