@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/neo')
+require 'byebug'
 
 # Project: Create a Proxy Class
 #
@@ -18,7 +19,16 @@ class Proxy
     # ADD MORE CODE HERE
   end
 
-  # WRITE CODE HERE
+  def method_missing(method_name, *args, &block)
+    byebug
+    if method_name.to_s[/channel/]
+      @object.__send__(method_name, args[0])
+    else
+      super(method_name, *args, &block)
+    end
+
+  end
+
 end
 
 # The proxy object should pass the following Koan:
