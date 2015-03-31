@@ -14,20 +14,43 @@ require 'byebug'
 # of the Proxy class is given in the AboutProxyObjectProject koan.
 
 class Proxy
+  attr_accessor :messages
+
   def initialize(target_object)
     @object = target_object
-    # ADD MORE CODE HERE
+    @messages = Hash.new
+    
   end
 
   def method_missing(method_name, *args, &block)
-    byebug
-    if method_name.to_s[/channel/]
-      @object.__send__(method_name, args[0])
+    if @messages[method_name] == nil
+      @messages[method_name] = 1
+    else
+      @messages[method_name] = @messages[method_name] + 1
+    end
+
+    if @object.respond_to?(method_name)
+      @object.__send__(method_name, *args)
     else
       super(method_name, *args, &block)
     end
-
   end
+
+  def messages
+    @messages.keys
+  end
+
+
+  def called?(method_name)
+    @messages.keys.include? method_name
+  end
+
+  def number_of_times_called(method_name)
+    num = 0
+    num = @messages[method_name] unless @messages[method_name] == nil
+    return num
+  end
+
 
 end
 
@@ -58,7 +81,6 @@ class AboutProxyObjectProject < Neo::Koan
 
     tv.power
     tv.channel = 10
-
     assert_equal [:power, :channel=], tv.messages
   end
 
